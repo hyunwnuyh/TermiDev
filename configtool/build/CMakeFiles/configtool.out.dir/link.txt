@@ -1,0 +1,1 @@
+/usr/bin/gcc   -rdynamic CMakeFiles/configtool.out.dir/src/main.c.o  -o ../configtool.out  -L/home/hyunw/git/TermiDev/configtool/lib -Wl,-rpath,/home/hyunw/git/TermiDev/configtool/lib -lncurses 

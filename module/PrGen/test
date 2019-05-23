@@ -1,4 +1,0 @@
-#!/bin/bash
-perl ./pgc.pl sample
-cd sample
-./build.sh

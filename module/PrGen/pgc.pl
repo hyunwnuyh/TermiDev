@@ -5,6 +5,7 @@ use File::Path qw(make_path);
 use File::Find qw(finddepth);
 use File::Copy qw(copy);
 
+# Argument check
 if ($#ARGV < 0) {
     help();
     die;
@@ -12,9 +13,7 @@ if ($#ARGV < 0) {
 
 $dir = getcwd;
 $std = "c99";
-$build = "exe";
 $flag = 0;
-
 @templates = ();
 
 $i = 0;
@@ -39,6 +38,7 @@ if (! $flag) {
     die;
 }
 
+# Ask for overwriting existing directory
 if (-d $dir) {
     print "Directory already exists($dir). Do you want to proceed? (y/n) :";
     $key = substr <STDIN>, 0, 1;
@@ -53,36 +53,34 @@ if (-d $dir) {
     make_path $dir;
 }
 
-
-open LIST, "<$Bin/template/.list";
+# Get project template from  list-c and print
+print "\nCurrent templates list\n";
+print "------------------------------\n";
+open LIST, "<$Bin/template/.list-c";
+$j = 0;
 while ($line = <LIST>) {
     $line =~ s/\n//g;
     push @templates, $line;
-}
-close LIST;
-
-$j = 0;
-print "Project template list\n";
-print "-------------------------------\n";
-for (; $j <= $#templates; $j++) {
-    open TEMP, "<$Bin/template/$templates[$j]/.template";
+    open TEMP, "<$Bin/template/$line/.template";
     print "$j: " . substr(<TEMP>, 5);
     close TEMP;
+    $j++;
 }
+close LIST;
+print "------------------------------\n";
+
 $j--;
 print "Select project template(0 - $j): ";
-
-$key = substr(<STDIN>, 0, 1);
+$key = substr <STDIN>, 0, -1;
 if ($key =~ /^-?\d+$/) {
     $key = $key * 1;
     if ($key <= $j && $key >= 0) {
         $flag = 0;
     }
 }
-
 while ($flag) {
     print "Please answer in degree (0 - $j): ";
-    $key = substr(<STDIN>, 0, 1);
+    $key = substr <STDIN>, 0, -1;
     if ($key =~ /^-?\d+$/) {
         $key = $key * 1;
         if ($key <= $j && $key >=0 ) {
@@ -91,6 +89,7 @@ while ($flag) {
     }
 }
 
+# Copy template files 
 File::Find::find(sub {
         $file = $File::Find::name;
         if (-e $file) {
@@ -123,6 +122,7 @@ while ($line = <CML>) {
 close CML;
 close OUT;
 
+# Create build script
 open OUT, ">$dir/build.sh";
 print OUT "#!/bin/bash\n";
 print OUT "cmake -Bbuild -H.\n";
@@ -131,9 +131,10 @@ print OUT "make\n";
 close OUT;
 chmod 0777, "$dir/build.sh";
 
+# Help function
 sub help {
     print "\n";
-    print "Usage : project-c create [-option -option ...] input\n";
+    print "Usage : tdev-c create [-option -option ...] input\n";
     print "\n";
     print "Possible options\n";
     print "-------------------------------------\n";

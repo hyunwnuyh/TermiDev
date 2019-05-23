@@ -1,0 +1,3 @@
+/home/hyunw/git/TermiDev/configtool/build/CMakeFiles/rebuild_cache.dir
+/home/hyunw/git/TermiDev/configtool/build/CMakeFiles/tool.dir
+/home/hyunw/git/TermiDev/configtool/build/CMakeFiles/edit_cache.dir
