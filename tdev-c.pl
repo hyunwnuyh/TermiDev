@@ -59,7 +59,7 @@ if ( $ARGV[0] eq "create" ) {
 # Help function
 sub display_help {
     print "\n";
-    print "Usage: termide-c [command] [arg0] [arg1] ....\n";
+    print "Usage: tdev-c [command] [arg0] [arg1] ....\n";
     print "Possible commands\n";
     print "---------------------------------------------\n";
     print "create                   Create new project\n";

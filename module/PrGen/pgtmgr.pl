@@ -24,6 +24,14 @@ if ($ARGV[1] eq "add") {
     }
     $dir = getcwd;
     $dir .= "/$ARGV[2]" if (not $ARGV[2] eq ".");
+    if (not -d $dir) {
+        if (not -e $dir) {
+            print "Error: $dir does not exists\n";
+        } else {
+            print "Error: $dir is not a directory\n";
+        }
+        die "\n";
+    }
     $dest = "$Bin/template/";
     $fold = substr $dir, rindex($dir, "/") + 1;
     print "Set destination folder (default is $fold) : ";
@@ -55,23 +63,25 @@ if ($ARGV[1] eq "add") {
     print LIST "$fold\n";
     close LIST;
 
-    print "Modify $fold/CMakeLists.txt\n";
-    open CMLI, "<$dir/CMakeLists.txt";
-    open CMLO, ">$dest/CMakeLists.txt";
-    while ($line = <CMLI>) {
-        if ($line =~ m"CMAKE_C_STANDARD") {
-            $line = "set ( CMAKE_C_STANDARD <std> )\n";
-        } elsif ($line =~ m"set\s\(\sPROJECT_NAME") {
-            $line = "set ( PROJECT_NAME <proj_name> )\n";
-        } elsif ($line =~ m"add_executable" || $line =~ m"add_library") {
-            $line =~ s"\(\s+\w+\s+"( <proj_name> ";
-        } 
+    if (-f "$dir/CMakeLists.txt") {
+        print "Modify $fold/CMakeLists.txt\n";
+        open CMLI, "<$dir/CMakeLists.txt";
+        open CMLO, ">$dest/CMakeLists.txt";
+        while ($line = <CMLI>) {
+            if ($line =~ m"CMAKE_C_STANDARD") {
+                $line = "set ( CMAKE_C_STANDARD <std> )\n";
+            } elsif ($line =~ m"set\s\(\sPROJECT_NAME") {
+                $line = "set ( PROJECT_NAME <proj_name> )\n";
+            } elsif ($line =~ m"add_executable" || $line =~ m"add_library" || $line =~ m"target_link_libraries") {
+                $line =~ s"\(\s+\w+\s+"( <proj_name> ";
+            } 
 
-        print CMLO "$line";
+            print CMLO "$line";
+        }
+        close CMLO;
+        close CMLI;
     }
-    close CMLO;
-    close CMLI;
-
+    
 } elsif ($ARGV[1] eq "remove") {
     # Remove template
     ($n, $tlist) = print_tlist();
@@ -109,7 +119,7 @@ if ($ARGV[1] eq "add") {
         } else {
             print "Write modified text : ";
             $list[$index] = substr <STDIN>, 0, -1;
-        }
+        } 
     }
 } elsif ($ARGV[1] eq "list") {
     # Show list
@@ -180,4 +190,3 @@ sub help {
     print "help             help\n";
     print "-----------------------------------------------\n";
 }
-
